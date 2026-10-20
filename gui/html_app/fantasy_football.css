@@ -1,0 +1,10 @@
+article {
+    text-align: center;
+    background-color: aquamarine;
+    border-style: solid;
+    padding-block: 4px;
+    margin-bottom: 20px;
+    margin-left: 40px;
+    margin-right: 40px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
