@@ -1,9 +1,2 @@
-.venv/
-__pycache__/
-*.pyc
-.idea/
-.DS_Store
-~$*
-data/*.db
-data/*.db-journal
-*.sqbpro
+.env
+package.json
