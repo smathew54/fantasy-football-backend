@@ -4,13 +4,10 @@ from urllib.request import urlopen
 import ssl
 from bs4 import BeautifulSoup
 import pandas as pd
-import numpy as np
-import sklearn
-from sklearn.linear_model import LinearRegression
-import sqlite3
 import logging
 import certifi
-import sqlalchemy
+from sqlalchemy import create_engine, Column, Integer, String, Sequence
+import openpyxl
 
 
 # here is the code
@@ -19,6 +16,9 @@ import sqlalchemy
 
 # set the webpage available
 # takes in the data from the webpage and returns it as a df
+
+
+#need to be able to set a global variable in one place and have that be taken by the webscrapper and the
 
 def web_scrapper(year):
     year = str(year)
@@ -41,38 +41,38 @@ def web_scrapper(year):
     stats.FantPos = stats.FantPos.astype(str)
     stats.Player = stats.Player.astype(str)
     stats.Player = stats.Player.str.strip("*+")
-    team_selector(stats)
+    #    team_selector(stats)
+    column_cleanser(stats)
     return stats
 
+def column_cleanser(df):
+    column_names = ["player", "team", "fantpos",
+                    "age", "games", "games_started",
+                    "completions", "passing_att", "passing_yards", "passing_td", "int",
+                    "rushing_att", "rushing_yrds", "yars_per_attempt", "rushing_td",
+                    "targets", "receptions", "yards_receiving", "yards_per_reception", "receiving_td",
+                    "fumble", "fumble_lost",
+                    "misc_td", "two_pm", "two_pp",
+                    "fant_points", "ppr", "dkpt", "fdpt", "vbd", "position_rank", "overall_rank"]
+    #print(df.columns.values[0])
+    column_names_len = len(column_names)
+    print(f"the length of the replacement columns is {column_names_len}")
+    print(len(df.columns))
 
-def database(stats):
-    engine = create_engine('sqlite:///Users/Shawn/application/stats.db')
-    table_name = 'football'
-    df.to_sql(table_name, con=engine, if_exists='replace', index=False)
+    logging.debug("entering the enumerate")
+    for column, index in enumerate(df.columns):
+        print(f"Position: {index}, Column Name: {column}")
+    df.columns = column_names
+    print(df)
 
 
-# year = 2020
-# url = 'https://www.pro-football-reference.com/years/2021/fantasy.htm'
-# html = urlopen(url)
-# soup = BeautifulSoup(html, features = 'lxml')
-
-# #get the headers for the dataframe
-# headers = [th.getText() for th in soup.findAll('tr')[1].findAll('th')]
-# headers = headers[1:]
-# print(headers[:5])
-
-
-# #get the rest of the data for the dataframe
-# rows = soup.findAll('tr', class_ = lambda table_rows: table_rows != "thread")
-# player_stats = [[td.getText() for td in rows[i].findAll('td')]
-#                 for i in range(len(rows))]
-# player_stats = player_stats[2:]
-
-# stats = pd.DataFrame(player_stats, columns = headers)
-# stats.FantPos = stats.FantPos.astype(str)
-# stats.Player = stats.Player.astype(str)
-# stats.Player = stats.Player.str.strip("*+")
-# print(stats.head())
+def write_to_database(stats, year):
+    #schema issue is preventing write because of column names are duplicated. Need to cleanse column names
+    print(stats)
+    stats.to_excel(f'stats_file_{year}.xlsx')
+    engine = create_engine('sqlite:////Users/Shawn/application/stats.db')
+    table_name = f'fantasy_football_stats_{year}'
+    stats.to_sql(table_name, con=engine, if_exists='replace', index=False)
 
 
 def team_selector(stats):
@@ -111,17 +111,7 @@ def team_selector(stats):
     print(team_stats_df)
 
 
-# datascience
-# need to drop the nones first
-# stats.dropna()
-
-# list_of_columns = ['Age', 'G', 'GS', 'Cmp', 'Att', 'Yds', 'Y/A', 'TD', 'Tgt',
-# 'Rec', 'Yds', 'Y/R', 'TD', 'Fmb', 'FL', 'TD']
-
-# data_science_df = stats[list_of_columns]
-
-# stats_array = np.array(data_science_df)
-
 if __name__ == "__main__":
-    stats = web_scrapper(2023)
-    database(stats)
+    stats = web_scrapper(2024)
+    column_cleanser(stats)
+    write_to_database(stats, 2024)
