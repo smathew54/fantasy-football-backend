@@ -41,16 +41,15 @@ def web_scrapper(year):
     stats.FantPos = stats.FantPos.astype(str)
     stats.Player = stats.Player.astype(str)
     stats.Player = stats.Player.str.strip("*+")
-#    team_selector(stats)
+    #    team_selector(stats)
     column_cleanser(stats)
     return stats
-
 
 def column_cleanser(df):
     column_names = ["player", "team", "fantpos",
                     "age", "games", "games_started",
                     "completions", "passing_att", "passing_yards", "passing_td", "int",
-                    "rushing_att", "rushing_yrds", "yars_per_attempt",  "rushing_td",
+                    "rushing_att", "rushing_yrds", "yars_per_attempt", "rushing_td",
                     "targets", "receptions", "yards_receiving", "yards_per_reception", "receiving_td",
                     "fumble", "fumble_lost",
                     "misc_td", "two_pm", "two_pp",
@@ -65,8 +64,6 @@ def column_cleanser(df):
         print(f"Position: {index}, Column Name: {column}")
     df.columns = column_names
     print(df)
-
-
 
 
 def write_to_database(stats, year):
